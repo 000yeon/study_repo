@@ -3,7 +3,7 @@
 ## 전체 구조
 
 ```
-moda-frontend-admin/
+example-frontend-admin/
 ├── AI_CONTEXT/                      # AI 작업 온보딩/구현 규칙 문서
 │   ├── AI_ONBOARDING.md             # 새 세션 시작점과 읽기 순서
 │   ├── FIGMA_MCP_WORKFLOW.md        # Figma MCP 분석·구현 절차
@@ -144,10 +144,7 @@ moda-frontend-admin/
 | path | 메뉴 그룹 | 하위 메뉴 |
 |---|---|---|
 | /members | 회원 관리 | /members, /members/withdrawal |
-| /about | 회사 소개 관리 | /about/history, /about/map, /about/membership |
-| /site | 사이트 관리 | /site/strip-banner, /site/main-banner, /site/mypage-banner, /site/popup |
-| /stores | 점포/브랜드 관리 | /stores, /stores/brand-categories |
-| /benefits | 쇼핑혜택 관리 | /benefits/news, /benefits/brand, /benefits/events |
-| /support | 고객센터 관리 | /support/faq, /support/faq-categories, /support/notices, /support/inquiries |
+| /about | 회사 소개 관리 | /about/history, /about/map |
+| /support | 고객센터 관리 | /support/faq, /support/notices, /support/inquiries |
 | /terms | 약관 관리 | /terms/usage, /terms/privacy |
 | /admins | 관리자 관리 | /admins/accounts, /admins/roles |
