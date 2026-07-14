@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin AI Workflow — 회고 포트폴리오</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --bg-card: #151820;
+      --bg-elevated: #1c202c;
+      --border: #252a38;
+      --border-light: #2e3448;
+      --text: #e8ecf4;
+      --text-secondary: #8892aa;
+      --text-muted: #525d78;
+      --accent: #6c8fff;
+      --accent-dim: rgba(108, 143, 255, 0.12);
+      --accent-glow: rgba(108, 143, 255, 0.25);
+      --teal: #4ecdc4;
+      --teal-dim: rgba(78, 205, 196, 0.1);
+      --green: #5cb85c;
+      --green-dim: rgba(92, 184, 92, 0.1);
+      --yellow: #f5a623;
+      --yellow-dim: rgba(245, 166, 35, 0.1);
+      --red: #e05a5a;
+      --red-dim: rgba(224, 90, 90, 0.1);
+      --purple: #a78bfa;
+      --purple-dim: rgba(167, 139, 250, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Layout ── */
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px 120px; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-eyebrow {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-lead {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .8rem;
+      color: var(--text-muted);
+    }
+    .meta-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border-light);
+    }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 48px 0;
+    }
+    .stat {
+      background: var(--bg-card);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: .72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .stat-sublabel {
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Section ── */
+    .section { margin-top: 64px; }
+    .section-header { margin-bottom: 28px; }
+    .section-chip {
+      display: inline-block;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-glow);
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -.01em;
+    }
+    .section-sub {
+      font-size: .875rem;
+      color: var(--text-secondary);
+    }
+
+    /* ── Parts Grid ── */
+    .parts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .part-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: border-color .2s, transform .2s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .part-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .part-card:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+    }
+    .part-card:hover::before { opacity: 1; }
+    .part-num {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .part-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .part-desc {
+      font-size: .82rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .part-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 14px;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .part-link::after { content: ' →'; }
+    .part-card.wide { grid-column: span 2; }
+
+    /* ── Metrics Grid ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .metric-label {
+      font-size: .75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .metric-before-after {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .metric-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .metric-arrow { color: var(--text-muted); font-size: .75rem; }
+    .metric-change {
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+    .change-good { background: var(--green-dim); color: var(--green); }
+    .change-great { background: var(--teal-dim); color: var(--teal); }
+
+    /* ── Tech Choices ── */
+    .tech-list { display: flex; flex-direction: column; gap: 12px; }
+    .tech-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      align-items: start;
+      gap: 16px;
+    }
+    .tech-name {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .tech-alt {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .tech-reason {
+      font-size: .8rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .tech-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .badge-trend { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,.2); }
+    .badge-perf { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(78,205,196,.2); }
+    .badge-quality { background: var(--green-dim); color: var(--green); border: 1px solid rgba(92,184,92,.2); }
+    .badge-dx { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,166,35,.2); }
+
+    /* ── Timeline ── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item { position: relative; padding-bottom: 28px; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute;
+      left: -24px;
+      top: 5px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 2px solid var(--border-light);
+    }
+    .tl-item.done .tl-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .tl-week {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .tl-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .tl-desc { font-size: .8rem; color: var(--text-secondary); }
+
+    /* ── Quote ── */
+    .quote-block {
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      background: var(--accent-dim);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+    }
+    .quote-text {
+      font-size: 1rem;
+      color: var(--text);
+      font-style: italic;
+      line-height: 1.7;
+    }
+
+    /* ── Summary Table ── */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+    }
+    .summary-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-table th:first-child { border-radius: 8px 0 0 0; }
+    .summary-table th:last-child { border-radius: 0 8px 0 0; }
+    .summary-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+    .summary-table tr:last-child td { border-bottom: none; }
+    .summary-table tr:hover td { background: var(--bg-elevated); }
+    td.good { color: var(--green); font-weight: 700; }
+    td.great { color: var(--teal); font-weight: 700; }
+
+    /* ── ROI Block ── */
+    .roi-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 28px;
+    }
+    .roi-cell {
+      background: var(--bg-card);
+      padding: 24px;
+      text-align: center;
+    }
+    .roi-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.03em;
+      margin-bottom: 4px;
+    }
+    .roi-label { font-size: .75rem; color: var(--text-muted); font-weight: 600; }
+    .roi-num.accent { color: var(--accent); }
+    .roi-num.teal { color: var(--teal); }
+
+    /* ── Next Steps ── */
+    .next-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .next-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .next-term {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .next-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: .82rem;
+      color: var(--text-secondary);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+    .next-item:last-child { border-bottom: none; }
+    .next-icon { font-size: .75rem; margin-top: 2px; flex-shrink: 0; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-left { font-size: .8rem; color: var(--text-muted); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-link {
+      font-size: .78rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    .footer-link:hover { color: var(--text-secondary); border-color: var(--border-light); }
+
+    @media (max-width: 680px) {
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+      .parts-grid { grid-template-columns: 1fr; }
+      .parts-grid .wide { grid-column: span 1; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .tech-item { grid-template-columns: 1fr; gap: 8px; }
+      .roi-block { grid-template-columns: 1fr; }
+      .next-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Hero ── -->
+  <header class="hero">
+    <div class="hero-eyebrow">Project Portfolio · 2025–2026</div>
+    <h1>Admin <span>AI Workflow</span><br>설계와 회고</h1>
+    <p class="hero-lead">
+      사내 Admin 프로젝트를 AI와 함께 개발하기 위한 표준 워크플로우를 설계하고 팀에 도입한 과정.
+      기술 선택의 근거, 시스템 설계 원칙, 운영 6주 결과를 기록합니다.
+    </p>
+    <div class="hero-meta">
+      <span class="meta-item"><span class="meta-dot"></span> 팀 6명 · Admin 프로젝트 3개</span>
+      <span class="meta-item"><span class="meta-dot"></span> 운영 기간 6주 측정</span>
+      <span class="meta-item"><span class="meta-dot"></span> pnpm · Vite · ESLint v9 · Husky v9 · Figma MCP</span>
+    </div>
+  </header>
+
+  <!-- ── Stats ── -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-number" style="color:var(--teal)">57%</div>
+      <div class="stat-label">도메인 추가 시간</div>
+      <div class="stat-sublabel">3.5일 → 1.5일</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number" style="color:var(--accent)">76%</div>
+      <div class="stat-label">AI 재작업률 감소</div>
+      <div class="stat-sublabel">38% → 9%</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number" style="color:var(--green)">90%</div>
+      <div class="stat-label">온보딩 시간 단축</div>
+      <div class="stat-sublabel">4시간 → 25분</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number" style="color:var(--purple)">13</div>
+      <div class="stat-label">컨텍스트 문서</div>
+      <div class="stat-sublabel">Template 01–13</div>
+    </div>
+  </div>
+
+  <!-- ── Parts ── -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-chip">Record</div>
+      <div class="section-title">5개 파트 기록</div>
+      <div class="section-sub">배경부터 회고까지 — 각 파트를 순서대로 읽거나 관심 있는 파트만 먼저 읽어도 됩니다.</div>
+    </div>
+    <div class="parts-grid">
+      <div class="part-card" onclick="location.href='./01-background.md'">
+        <div class="part-num">Part 01</div>
+        <div class="part-title">왜 만들었나 — 배경과 문제 정의</div>
+        <div class="part-desc">매 작업마다 반복되던 컨텍스트 설명 비용, AI 생성 코드의 높은 재작업률, Figma-코드 갭. 문제를 정의하고 해결 방향을 잡기까지.</div>
+        <div class="part-link">01-background.md 읽기</div>
+      </div>
+      <div class="part-card" onclick="location.href='./02-tech-choices.md'">
+        <div class="part-num">Part 02</div>
+        <div class="part-title">기술 선택과 근거 — 2025/2026 트렌드 기반 환경</div>
+        <div class="part-desc">pnpm을 선택한 이유, Admin에 Vite가 적합한 이유, ESLint v9 Flat Config로의 전환, Husky + commitlint 조합까지. 각 결정의 근거를 기록.</div>
+        <div class="part-link">02-tech-choices.md 읽기</div>
+      </div>
+      <div class="part-card" onclick="location.href='./03-ai-workflow-design.md'">
+        <div class="part-num">Part 03</div>
+        <div class="part-title">AI 워크플로우 설계 — 13개 문서와 5가지 시나리오</div>
+        <div class="part-desc">Template 13개의 역할 분리 원칙, AI_CONTEXT vs docs/template 분리 이유, 5가지 시나리오 설계, Figma MCP 연동, Smoke Check 방법론.</div>
+        <div class="part-link">03-ai-workflow-design.md 읽기</div>
+      </div>
+      <div class="part-card" onclick="location.href='./04-results-and-metrics.md'">
+        <div class="part-num">Part 04</div>
+        <div class="part-title">팀 도입 결과와 수치 — 운영 6주 기준</div>
+        <div class="part-desc">도메인 추가 시간, AI 재작업률, 온보딩 시간, PR 코멘트 비율, CI 실패율, Figma 오차율. 예상하지 못한 부가 효과와 ROI 계산.</div>
+        <div class="part-link">04-results-and-metrics.md 읽기</div>
+      </div>
+      <div class="part-card wide" onclick="location.href='./05-retrospective.md'">
+        <div class="part-num">Part 05</div>
+        <div class="part-title">회고 — 잘한 것, 아쉬운 것, 다음 스텝</div>
+        <div class="part-desc">문서를 코드처럼 버전 관리한 것이 왜 좋았는가, 초기 40시간 투자의 의미, AI 컨텍스트 소화 한계, 다음으로 만들고 싶은 것들.</div>
+        <div class="part-link">05-retrospective.md 읽기</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quote ── -->
+  <div class="quote-block" style="margin-top:48px">
+    <div class="quote-text">
+      "AI에게 바로 '구현해줘'라고 던지지 않는다. 항상 컨텍스트 문서를 먼저 준다.
+      이 한 줄이 이 워크플로우 전체를 관통하는 원칙이다."
+    </div>
+  </div>
+
+  <!-- ── Key Metrics ── -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-chip">Results</div>
+      <div class="section-title">운영 6주 핵심 지표</div>
+      <div class="section-sub">도입 전 6주와 도입 후 6주를 같은 팀 · 같은 규모 작업 기준으로 비교</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">신규 도메인 CRUD 소요 시간</div>
+        <div class="metric-before-after">
+          <span class="metric-val" style="color:var(--text-muted)">3.5일</span>
+          <span class="metric-arrow">→</span>
+          <span class="metric-val" style="color:var(--teal)">1.5일</span>
+        </div>
+        <span class="metric-change change-great">-57%</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">AI 생성 코드 재작업률</div>
+        <div class="metric-before-after">
+          <span class="metric-val" style="color:var(--text-muted)">38%</span>
+          <span class="metric-arrow">→</span>
+          <span class="metric-val" style="color:var(--accent)">9%</span>
+        </div>
+        <span class="metric-change change-great">-76%</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">환경 세팅 온보딩 시간</div>
+        <div class="metric-before-after">
+          <span class="metric-val" style="color:var(--text-muted)">4시간</span>
+          <span class="metric-arrow">→</span>
+          <span class="metric-val" style="color:var(--green)">25분</span>
+        </div>
+        <span class="metric-change change-great">-90%</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">PR 포맷/컨벤션 코멘트 비율</div>
+        <div class="metric-before-after">
+          <span class="metric-val" style="color:var(--text-muted)">28%</span>
+          <span class="metric-arrow">→</span>
+          <span class="metric-val" style="color:var(--green)">4%</span>
+        </div>
+        <span class="metric-change change-great">-86%</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">CI 린트/포맷 실패 (주평균)</div>
+        <div class="metric-before-after">
+          <span class="metric-val" style="color:var(--text-muted)">2.3건</span>
+          <span class="metric-arrow">→</span>
+          <span class="metric-val" style="color:var(--teal)">0건</span>
+        </div>
+        <span class="metric-change change-great">-100%</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Figma 컬러 토큰 오차율</div>
+        <div class="metric-before-after">
+          <span class="metric-val" style="color:var(--text-muted)">~18%</span>
+          <span class="metric-arrow">→</span>
+          <span class="metric-val" style="color:var(--purple)"><3%</span>
+        </div>
+        <span class="metric-change change-great">-83%</span>
+      </div>
+    </div>
+
+    <div class="roi-block">
+      <div class="roi-cell">
+        <div class="roi-num accent">44h</div>
+        <div class="roi-label">초기 투자 (문서 작성 + 팀 공유)</div>
+      </div>
+      <div class="roi-cell">
+        <div class="roi-num teal">68h</div>
+        <div class="roi-label">6주 절약 시간 (팀 전체)</div>
+      </div>
+      <div class="roi-cell">
+        <div class="roi-num" style="color:var(--green)">6주</div>
+        <div class="roi-label">손익분기점 도달</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tech Choices ── -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-chip">Tech Decisions</div>
+      <div class="section-title">5가지 핵심 기술 선택</div>
+      <div class="section-sub">각 결정은 "2025년 커뮤니티 방향성과 일치하는가"를 기준으로 했다</div>
+    </div>
+    <div class="tech-list">
+      <div class="tech-item">
+        <div>
+          <div class="tech-name">pnpm</div>
+          <div class="tech-alt">vs npm / yarn</div>
+        </div>
+        <div class="tech-reason">
+          content-addressable store로 디스크 60~80% 절약. strict isolation으로 phantom dependency 차단.
+          모노레포 네이티브 지원. 팀 3개 프로젝트 동시 운영 환경에서 효과 극대화.
+        </div>
+        <span class="tech-badge badge-perf">Performance</span>
+      </div>
+      <div class="tech-item">
+        <div>
+          <div class="tech-name">Vite</div>
+          <div class="tech-alt">vs Next.js (CSR Admin)</div>
+        </div>
+        <div class="tech-reason">
+          Admin SPA는 SEO 불필요 · SSR 불필요 · CSR 최적. Vite ESM 기반 개발 서버로 시작 시간
+          40초 → 1초 미만. Next.js의 SSR 기능은 Admin에서 오버헤드.
+        </div>
+        <span class="tech-badge badge-dx">DX</span>
+      </div>
+      <div class="tech-item">
+        <div>
+          <div class="tech-name">ESLint v9<br>Flat Config</div>
+          <div class="tech-alt">vs .eslintrc (deprecated)</div>
+        </div>
+        <div class="tech-reason">
+          v9부터 .eslintrc 공식 deprecated. Flat Config는 설정 배열이 선언 순서대로 적용되어
+          예측 가능. TypeScript 통합이 자연스럽고, ignores가 단일 파일에서 관리됨.
+        </div>
+        <span class="tech-badge badge-trend">2025 Trend</span>
+      </div>
+      <div class="tech-item">
+        <div>
+          <div class="tech-name">Prettier<br>+ plugins</div>
+          <div class="tech-alt">tailwindcss · sort-imports</div>
+        </div>
+        <div class="tech-reason">
+          ESLint와 역할 분리 (품질 vs 포맷). prettier-plugin-tailwindcss로 Tailwind 클래스 자동
+          정렬 — 도입 후 관련 PR 코멘트 0건. import 순서 자동화.
+        </div>
+        <span class="tech-badge badge-quality">Code Quality</span>
+      </div>
+      <div class="tech-item">
+        <div>
+          <div class="tech-name">Husky v9<br>+ lint-staged<br>+ commitlint</div>
+          <div class="tech-alt">pre-commit 게이팅</div>
+        </div>
+        <div class="tech-reason">
+          CI 전에 로컬에서 오류를 잡아 피드백 루프 단축. lint-staged로 변경 파일만 처리해 속도
+          유지. Conventional Commits 강제 → git log 의미 있어짐, 커밋 준수율 62% → 100%.
+        </div>
+        <span class="tech-badge badge-quality">Code Quality</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Workflow Design ── -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-chip">Design</div>
+      <div class="section-title">워크플로우 핵심 설계 원칙</div>
+    </div>
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>원칙</th>
+          <th>구현 방식</th>
+          <th>효과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AI를 팀원처럼 온보딩</td>
+          <td>13개 컨텍스트 문서 패키지 (Template 01~13)</td>
+          <td class="great">AI 재작업률 76% 감소</td>
+        </tr>
+        <tr>
+          <td>작업 유형별 문서 조합 최적화</td>
+          <td>5가지 시나리오 (A~E) + 문서 선택 가이드</td>
+          <td class="good">컨텍스트 낭비 없이 정확한 문서만 제공</td>
+        </tr>
+        <tr>
+          <td>디자인-코드 갭 자동화</td>
+          <td>Figma MCP → 05/06 문서 자동 재생성</td>
+          <td class="great">컬러 토큰 오차 83% 감소</td>
+        </tr>
+        <tr>
+          <td>이식성 확보</td>
+          <td>[PROJECT_ROOT] 플레이스홀더 추상화</td>
+          <td class="good">어떤 팀 · 어떤 프로젝트에도 재사용 가능</td>
+        </tr>
+        <tr>
+          <td>구현 전 계획 확인</td>
+          <td>"바로 생성하지 말고 계획 먼저 보여줘" 프롬프트 패턴</td>
+          <td class="good">방향 오류를 구현 전에 잡음</td>
+        </tr>
+        <tr>
+          <td>Smoke Check 의무화</td>
+          <td>목록·등록·수정·삭제 6개 항목 브라우저 체크리스트</td>
+          <td class="good">"빌드는 됐는데 화면이 안 뜸" 이슈 0건</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Timeline ── -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-chip">Timeline</div>
+      <div class="section-title">프로젝트 타임라인</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item done">
+        <div class="tl-dot"></div>
+        <div class="tl-week">Week 1</div>
+        <div class="tl-title">문제 정의 + 설계 시작</div>
+        <div class="tl-desc">AI 재작업 패턴 분석, 컨텍스트 문서 구조 설계, Template 01~04 초안 작성</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tl-dot"></div>
+        <div class="tl-week">Week 2</div>
+        <div class="tl-title">Template 시스템 완성</div>
+        <div class="tl-desc">Template 05~13 작성, AI_CONTEXT vs docs/template 구조 확정, Sample/ 파일 예시 작성</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tl-dot"></div>
+        <div class="tl-week">Week 3</div>
+        <div class="tl-title">개발 환경 표준화</div>
+        <div class="tl-desc">Environment/ 폴더 구성 (pnpm·Vite·ESLint·Prettier·Husky), 팀 내 공유 및 적용</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tl-dot"></div>
+        <div class="tl-week">Week 4</div>
+        <div class="tl-title">Figma MCP 연동 + 워크플로우 문서화</div>
+        <div class="tl-desc">Figma MCP 세팅, 05/06 재생성 절차 확립, HOW-TO-USE-AI.html / QUICK_START.html 완성</div>
+      </div>
+      <div class="tl-item done">
+        <div class="tl-dot"></div>
+        <div class="tl-week">Week 5–6</div>
+        <div class="tl-title">팀 적용 + 지표 수집</div>
+        <div class="tl-desc">3개 Admin 프로젝트에 전면 적용, 지표 측정, 피드백 반영 및 문서 개선</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-week">Next</div>
+        <div class="tl-title">CLI 초기화 도구 + CI 자동화</div>
+        <div class="tl-desc">npx create-admin-workflow, GitHub Actions 템플릿, 문서 자동 갱신 훅</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Next Steps ── -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-chip">Next</div>
+      <div class="section-title">다음 스텝</div>
+    </div>
+    <div class="next-grid">
+      <div class="next-card">
+        <div class="next-term">단기 (1~3개월)</div>
+        <div class="next-item"><span class="next-icon">⚡</span> CLI 초기화 도구 — <code>npx create-admin-workflow</code> 한 줄로 세팅 완료</div>
+        <div class="next-item"><span class="next-icon">⚡</span> GitHub Actions 워크플로우 Template에 포함 — 복사해서 바로 사용</div>
+      </div>
+      <div class="next-card">
+        <div class="next-term">중기 (3~6개월)</div>
+        <div class="next-item"><span class="next-icon">🔮</span> AI_CONTEXT 문서 자동 갱신 훅 — API 변경 시 관련 문서에 알림</div>
+        <div class="next-item"><span class="next-icon">🔮</span> 백엔드 / 모바일 도메인으로 워크플로우 확장</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="footer-left">Admin AI Workflow · 회고 포트폴리오 · 2026</div>
+    <div class="footer-links">
+      <a class="footer-link" href="./01-background.md">배경</a>
+      <a class="footer-link" href="./02-tech-choices.md">기술 선택</a>
+      <a class="footer-link" href="./03-ai-workflow-design.md">설계</a>
+      <a class="footer-link" href="./04-results-and-metrics.md">결과</a>
+      <a class="footer-link" href="./05-retrospective.md">회고</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
